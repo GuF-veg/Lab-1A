@@ -1,7 +1,7 @@
 //
 // Created by Gu Feng on 2023/3/11.
 //
-#include "analyze.h"
+#include "analyzer.h"
 
 bool analyze_ethernet_frame(const uint8_t* pkt, DataPkt* data){
     auto* ethh = (Ethernet_header*)pkt;

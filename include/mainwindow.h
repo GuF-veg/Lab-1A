@@ -5,17 +5,13 @@
 #ifndef LAB_1A_MAINWINDOW_H
 #define LAB_1A_MAINWINDOW_H
 
-#include "pcap.h"
 #include "sniffer.h"
-#include "analyze.h"
+#include "pcap.h"
 #include <QMainWindow>
 #include <QDateTime>
 #include <QStandardItemModel>
 #include <QLabel>
 #include <vector>
-#include <winsock.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
 
 
 QT_BEGIN_NAMESPACE
@@ -28,7 +24,6 @@ Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
-    void initCaps();
     void setData(DataPkt *npacket);
     void on_startButton_clicked();
     void on_stopButton_clicked();
@@ -40,6 +35,9 @@ public:
 private:
     Ui::MainWindow *ui;
     QLabel *warning;
+//    std::vector<DataPkt*> allDataPkt;
+//    std::vector<uint8_t*> dataVec;
+//    pcap_t *handle;
 };
 
 

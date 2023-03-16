@@ -28,12 +28,12 @@ file(GLOB source_file
 
 add_executable(Lab_1A ${source_file})
 target_link_libraries(Lab_1A
+        ws2_32.lib
         Qt::Core
         Qt::Gui
         Qt::Widgets
         Packet.lib
         wpcap.lib
-        ws2_32.lib
         )
 
 if (WIN32)

@@ -12,8 +12,6 @@
 pcap_if_t *allDevices; //所有网卡设备列表
 QStandardItemModel *tableModel;
 QStandardItemModel *treeModel;
-//QString current_date;
-//QDateTime current_date_time;
 std::vector<DataPkt*> allDataPkt;
 std::vector<uint8_t*> dataVec;
 Sniffer *sniffer = nullptr;
@@ -23,9 +21,6 @@ bpf_u_int32 netmask;
 pcap_t *handle;
 pcap_pkthdr *header;
 const uint8_t *pkt_data;
-//tm ltime;
-//time_t local_tv_sec;
-//char timestr[16];
 
 MainWindow::~MainWindow() {
     delete ui;
@@ -36,7 +31,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     setFixedSize(1024, 768);
     setWindowTitle("Sniffer");
-    initCaps();
+    ui->deviceSelect->addItem("请选择设备");
+    if(pcap_findalldevs_ex(PCAP_SRC_IF_STRING, nullptr, &allDevices, errbuf) == -1)
+        qDebug() << "find Devices failed.";
+    QStringList devNames;
+    for(pcap_if_t *dev = allDevices; dev->next != nullptr; dev = dev->next){
+        devNames.emplace_back(dev->description);
+    }
+    ui->deviceSelect->addItems(devNames);
     tableModel = new QStandardItemModel;
     treeModel = new QStandardItemModel(ui->pktDetails);
     tableModel->setColumnCount(9);
@@ -68,21 +70,9 @@ MainWindow::MainWindow(QWidget *parent) :
     warning->setStyleSheet("color:#FF0000");
     warning->hide();
     ui->statusBar->addWidget(warning);
-    //connect(sniffer, &Sniffer::sentData, this, &MainWindow::setData);
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::on_startButton_clicked);
     connect(ui->stopButton, &QPushButton::clicked, this, &MainWindow::on_stopButton_clicked);
     connect(ui->pktList, &QTableView::doubleClicked, this, &MainWindow::on_pktList_doubleClicked);
-}
-
-void MainWindow::initCaps() {
-    ui->deviceSelect->addItem("请选择设备");
-    if(pcap_findalldevs_ex(PCAP_SRC_IF_STRING, nullptr, &allDevices, errbuf) == -1)
-        qDebug() << "find Devices failed.";
-    QStringList devNames;
-    for(pcap_if_t *dev = allDevices; dev->next != nullptr; dev = dev->next){
-        devNames.emplace_back(dev->description);
-    }
-    ui->deviceSelect->addItems(devNames);
 }
 
 void ipvalue2ipaddr(uint ip_value, char *ip_addr){
@@ -128,7 +118,7 @@ void MainWindow::setData(DataPkt *data) {
         src_port = QString::number(data->udph->src_port);
         dst_port = QString::number(data->udph->dst_port);
     }
-    else if(data->pktType == "TCP"){
+    else if(data->pktType == "TCP" || data->pktType == "HTTP"){
         src_port = QString::number(data->tcph->src_port);
         dst_port = QString::number(data->tcph->dst_port);
     }
@@ -145,7 +135,7 @@ void MainWindow::setData(DataPkt *data) {
     tableModel->setItem(i, 6, new QStandardItem(dst_port));
     tableModel->setItem(i, 7, new QStandardItem(protocol));
     tableModel->setItem(i, 8, new QStandardItem(length));
-    //delete []buf;
+    delete []buf;
 }
 
 void MainWindow::on_startButton_clicked() {
@@ -222,40 +212,6 @@ void Sniffer::run() {
 
 void Sniffer::stop() {
     stopped = true;
-}
-
-void print_packet_hex(char* pkt,int size_pkt,char *buf)
-{
-    int i=0,j = 0,rowcount;
-    char ch;
-    char tempbuf[8];
-    memset(tempbuf,0,8);
-    for(i= 0;i<size_pkt;i+=16)
-    {
-        sprintf(tempbuf,"%04x: ",i);
-        strcat(buf,tempbuf);
-        rowcount= (size_pkt-i) > 16 ? 16 : (size_pkt-i);
-
-        for(j = 0; j < rowcount; j++){
-            sprintf(tempbuf,"%02x  ",pkt[i+j]);
-            strcat(buf,tempbuf);
-        }
-        //不足16，用空格补足
-
-        for(j=rowcount;j<16;j++){
-            strcpy(tempbuf,"    ");
-            strcat(buf,tempbuf);
-        }
-        for(j = 0; j < rowcount; j++)
-        {
-            ch = pkt[i+j];
-            ch = isprint(ch) ? ch : '.';
-            sprintf(tempbuf,"%c  ",ch);
-            strcat(buf,tempbuf);
-        }
-        if(rowcount<16)
-            return;
-    }
 }
 
 void MainWindow::on_pktList_doubleClicked(const QModelIndex &index)

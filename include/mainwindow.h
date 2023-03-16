@@ -6,6 +6,7 @@
 #define LAB_1A_MAINWINDOW_H
 
 #include "sniffer.h"
+#include "shared_data.h"
 #include "pcap.h"
 #include <QMainWindow>
 #include <QDateTime>
@@ -35,9 +36,13 @@ public:
 private:
     Ui::MainWindow *ui;
     QLabel *warning;
-//    std::vector<DataPkt*> allDataPkt;
-//    std::vector<uint8_t*> dataVec;
-//    pcap_t *handle;
+    pcap_if_t *allDevices; //所有网卡设备列表
+    QStandardItemModel *tableModel;
+    QStandardItemModel *treeModel;
+    Sniffer *sniffer = nullptr;
+    bpf_program fcode;
+    char errbuf[PCAP_ERRBUF_SIZE];
+    bpf_u_int32 netmask;
 };
 
 

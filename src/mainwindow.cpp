@@ -9,18 +9,6 @@
 
 #include <QDebug>
 #include <cstring>
-pcap_if_t *allDevices; //所有网卡设备列表
-QStandardItemModel *tableModel;
-QStandardItemModel *treeModel;
-std::vector<DataPkt*> allDataPkt;
-std::vector<uint8_t*> dataVec;
-Sniffer *sniffer = nullptr;
-bpf_program fcode;
-char errbuf[PCAP_ERRBUF_SIZE];
-bpf_u_int32 netmask;
-pcap_t *handle;
-pcap_pkthdr *header;
-const uint8_t *pkt_data;
 
 MainWindow::~MainWindow() {
     delete ui;
@@ -190,29 +178,29 @@ void MainWindow::on_stopButton_clicked() {
     ui->startButton->setEnabled(true);
 }
 
-void Sniffer::run() {
-    stopped = false;
-    int res;
-    u_char *ppkt_data;
-    while(stopped != true && (res = pcap_next_ex(handle, &header, &pkt_data)) >= 0){
-        if(res == 0)
-            continue;
-        DataPkt *data = new DataPkt;
-        data->isHttp = false;
-        memset(data, 0, sizeof(DataPkt));
-        data->len = header->len;
-        analyze_ethernet_frame(pkt_data, data);
-        emit sentData(data);
-        ppkt_data = new u_char[header->len];
-        memcpy(ppkt_data, pkt_data, header->len);
-        allDataPkt.emplace_back(data);
-        dataVec.emplace_back(ppkt_data);
-    }
-}
-
-void Sniffer::stop() {
-    stopped = true;
-}
+//void Sniffer::run() {
+//    stopped = false;
+//    int res;
+//    u_char *ppkt_data;
+//    while(stopped != true && (res = pcap_next_ex(handle, &header, &pkt_data)) >= 0){
+//        if(res == 0)
+//            continue;
+//        DataPkt *data = new DataPkt;
+//        data->isHttp = false;
+//        memset(data, 0, sizeof(DataPkt));
+//        data->len = header->len;
+//        analyze_ethernet_frame(pkt_data, data);
+//        emit sentData(data);
+//        ppkt_data = new u_char[header->len];
+//        memcpy(ppkt_data, pkt_data, header->len);
+//        allDataPkt.emplace_back(data);
+//        dataVec.emplace_back(ppkt_data);
+//    }
+//}
+//
+//void Sniffer::stop() {
+//    stopped = true;
+//}
 
 void MainWindow::on_pktList_doubleClicked(const QModelIndex &index)
 {

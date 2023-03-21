@@ -6,7 +6,7 @@
 #define LAB_1A_SHARED_DATA_H
 #include "analyzer.h"
 #include "pcap.h"
+extern pcap_t *handle;
 extern std::vector<DataPkt*> allDataPkt;
 extern std::vector<uint8_t*> dataVec;
-extern pcap_t *handle;
 #endif //LAB_1A_SHARED_DATA_H

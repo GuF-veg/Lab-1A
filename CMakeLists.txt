@@ -26,7 +26,7 @@ file(GLOB source_file
         ${PROJECT_SOURCE_DIR}/NpcapHeader/pcap/*.h
         )
 
-add_executable(Lab_1A ${source_file})
+add_executable(Lab_1A WIN32 ${source_file})
 target_link_libraries(Lab_1A
         ws2_32.lib
         Qt::Core

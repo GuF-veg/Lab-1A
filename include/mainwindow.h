@@ -29,10 +29,6 @@ public:
     void on_startButton_clicked();
     void on_stopButton_clicked();
     void on_pktList_doubleClicked(const QModelIndex &index);
-//    void run_sniffer();
-//    void stop_sniffer();
-//signals:
-//    void sentData(DataPkt *data);
 private:
     Ui::MainWindow *ui;
     QLabel *warning;

@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     setFixedSize(1024, 768);
     setWindowTitle("Sniffer");
+
     ui->deviceSelect->addItem("请选择设备");
     if(pcap_findalldevs_ex(PCAP_SRC_IF_STRING, nullptr, &allDevices, errbuf) == -1)
         qDebug() << "find Devices failed.";
@@ -27,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
         devNames.emplace_back(dev->description);
     }
     ui->deviceSelect->addItems(devNames);
+
     tableModel = new QStandardItemModel;
     treeModel = new QStandardItemModel(ui->pktDetails);
     tableModel->setColumnCount(9);
@@ -58,12 +60,13 @@ MainWindow::MainWindow(QWidget *parent) :
     warning->setStyleSheet("color:#FF0000");
     warning->hide();
     ui->statusBar->addWidget(warning);
+
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::on_startButton_clicked);
     connect(ui->stopButton, &QPushButton::clicked, this, &MainWindow::on_stopButton_clicked);
     connect(ui->pktList, &QTableView::doubleClicked, this, &MainWindow::on_pktList_doubleClicked);
 }
 
-void ipvalue2ipaddr(uint ip_value, char *ip_addr){
+void IPvalue2IPaddr(uint ip_value, char *ip_addr){
     sprintf(ip_addr, "%d.%d.%d.%d",
             (ip_value >> 24) & 0x000000ff,
             (ip_value >> 16) & 0x000000ff,
@@ -97,9 +100,9 @@ void MainWindow::setData(DataPkt *data) {
         dst_ip = QString(QLatin1String(buf));
     }
     else if(data->ethh->type == 0x0800){
-        ipvalue2ipaddr(ntohl(data->iph->src_address), buf);
+        IPvalue2IPaddr(ntohl(data->iph->src_address), buf);
         src_ip = QString(QLatin1String(buf));
-        ipvalue2ipaddr(ntohl(data->iph->dst_address), buf);
+        IPvalue2IPaddr(ntohl(data->iph->dst_address), buf);
         dst_ip = QString(QLatin1String(buf));
     }
     if(data->pktType == "UDP"){
@@ -177,30 +180,6 @@ void MainWindow::on_stopButton_clicked() {
         sniffer->stop();
     ui->startButton->setEnabled(true);
 }
-
-//void Sniffer::run() {
-//    stopped = false;
-//    int res;
-//    u_char *ppkt_data;
-//    while(stopped != true && (res = pcap_next_ex(handle, &header, &pkt_data)) >= 0){
-//        if(res == 0)
-//            continue;
-//        DataPkt *data = new DataPkt;
-//        data->isHttp = false;
-//        memset(data, 0, sizeof(DataPkt));
-//        data->len = header->len;
-//        analyze_ethernet_frame(pkt_data, data);
-//        emit sentData(data);
-//        ppkt_data = new u_char[header->len];
-//        memcpy(ppkt_data, pkt_data, header->len);
-//        allDataPkt.emplace_back(data);
-//        dataVec.emplace_back(ppkt_data);
-//    }
-//}
-//
-//void Sniffer::stop() {
-//    stopped = true;
-//}
 
 void MainWindow::on_pktList_doubleClicked(const QModelIndex &index)
 {
@@ -319,4 +298,5 @@ void MainWindow::on_pktList_doubleClicked(const QModelIndex &index)
         default:
             break;
     }
+    delete []buf;
 }

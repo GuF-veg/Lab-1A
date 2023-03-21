@@ -5,7 +5,6 @@
 #ifndef LAB_1A_ANALYZER_H
 #define LAB_1A_ANALYZER_H
 
-//#include <winsock.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <QDebug>
@@ -103,10 +102,5 @@ struct DataPkt
 };
 
 extern bool analyze_ethernet_frame(const uint8_t* pkt,DataPkt * data);
-extern bool analyze_arp(const uint8_t* pkt,DataPkt *data);
-extern bool analyze_ip(const uint8_t* pkt,DataPkt *data);
-extern bool analyze_icmp(const uint8_t* pkt,DataPkt *data);
-extern bool analyze_tcp(const uint8_t* pkt,DataPkt *data);
-extern bool analyze_udp(const uint8_t* pkt,DataPkt *data);
 
 #endif //LAB_1A_ANALYZER_H

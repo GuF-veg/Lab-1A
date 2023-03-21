@@ -3,6 +3,12 @@
 //
 #include "analyzer.h"
 
+bool analyze_arp(const uint8_t* pkt,DataPkt *data);
+bool analyze_ip(const uint8_t* pkt,DataPkt *data);
+bool analyze_icmp(const uint8_t* pkt,DataPkt *data);
+bool analyze_tcp(const uint8_t* pkt,DataPkt *data);
+bool analyze_udp(const uint8_t* pkt,DataPkt *data);
+
 bool analyze_ethernet_frame(const uint8_t* pkt, DataPkt* data){
     auto* ethh = (Ethernet_header*)pkt;
     data->ethh = new Ethernet_header;

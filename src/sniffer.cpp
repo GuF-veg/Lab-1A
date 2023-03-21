@@ -8,7 +8,7 @@ void Sniffer::run(){
     stopped = false;
     int res;
     u_char *ppkt_data;
-    while(stopped != true && (res = pcap_next_ex(handle, &header, &pkt_data)) >= 0){
+    while(!stopped && (res = pcap_next_ex(handle, &header, &pkt_data)) >= 0){
         if(res == 0)
             continue;
         DataPkt *data = new DataPkt;
